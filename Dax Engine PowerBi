@@ -1,0 +1,83 @@
+The DAX Engines in Power BI — Part I
+Adil Memon
+Adil Memon
+
+·
+Follow
+
+4 min read
+·
+May 10, 2022
+147
+
+
+
+
+
+
+DAX is powered by two internal engines — Formula Engine & Storage Engine
+
+DAX is powered by two internal engines, the formula engine and a storage engine, which work together to compress and encode raw data and evaluate DAX queries.
+
+
+Although these engines work entirely in the background, it's really important to understand, even on a basic level, how they operate which will help you build advanced skills by understanding exactly how DAX thinks. Additionally, understanding the basics of these engines will also help better understand some of the external tools that are available for Power BI like DAX Studio and Tabular Editor.
+
+To better understand, lets divide it into the following topics that we will discuss in detail;
+
+Internal DAX Engines
+Query Evaluation
+Data & Storage Types
+Columnar Structures
+Compression & Encoding
+VertiPaq Relationships
+Internal DAX Engines
+
+There are two distinct engines that work together to process all the DAX queries the Formula Engine (FE) and Storage Engine (SE).
+
+The formula engine is the real deal here for DAX query execution and its main goal is to receive, interpret and execute all the DAX requests that are sent. Whereas the storage engine is really about compressing and encoding the raw data in the data model to store it as effectively as possible. Which means that when the storage engine receives a request from the formula engine, it can scan the data model and produce the requested data.
+
+One of the key differences here is that the storage engine doesn't actually understand the DAX language. It only makes sense of what is forwarded from the formula engine. So how will these two engines work with each other?
+
+The solution is Query Plan!
+
+A query plan is really just a list of logical steps that instructs the storage engine exactly what data it needs and how to get it. Once that query plan is generated the storage engine receives the plan from the formula engine, executes it, and then sends back a table of data called the data cache. The formula engine then works with that data cache and evaluates the DAX query that it was originally sent and returns an output.
+
+
+Query Evaluation in Depth
+This is how the formula and storage engine work together to generate the result of a query.
+
+Another really important work to note here is that there are two types of storage engines, based on the type of connection we are using:
+
+VertiPaq is used for data stored in memory, and
+DirectQuery is used for data read directly from the source
+Will explain these two types of connections in future blog.
+
+In our next topic we will illustrate how these two engines work together to evaluate the DAX formulas.
+
+Query Evaluation
+
+Lets see a simple DAX measures working behind the curtain, which will help us understand how we get our desired result from a set of instructions if written correctly.
+
+Here we evaluate a simple measure which will filter out the revenue from one city ‘Chicago’.
+
+
+Sample DAX Query
+Lets say, which gives us an output $5,227,898.
+
+So we executed the above measure and get this result, but how did the two engines worked together to get this?
+
+In the engine workflow we can see that our DAX query was forwarded to formula engine which ofcourse doesn’t get our result but it can interpret our DAX query and generates a query plan which it then sends it to storage engine.
+
+Now that storage have access to our data and it has the power to execute the query plan. Once storage engines executes the plan it generates a data cache which it sends back to the formula engine.
+
+Once the formula engine gets that data cache, it then runs our DAX query against the data cache to evaluate the result and displays the final measure output to our report.
+
+Here we can see that there is a lot going on behind the curtains having DAX produce this result, but this all happens so instantaneously that we don't even realize that our query had to make all that journey.
+
+So in a nutshell , if we try to think like this that whenever we add a new filter or change date of the report which will affect our desired result, the DAX engines have to reevaluate that query and go through this journey to get our revised result or output.
+
+Now think of a complex measure with multiple filters or slicers and any added changes related to them, the DAX engines are running constantly whenever these changes are made. So its just really amazing how efficiently and swiftly the DAX engines perform.
+
+Surely the above explanation provides you a better overview of how the DAX queries are evaluated in Power BI.
+
+I will write on the rest of the topics soon, till than would love to hear your feedback, suggestion or any question related to above topics.
